@@ -1,5 +1,7 @@
 # c-sharp-user-image
 
+This image inherits the [base-python-image](https://github.com/cal-icor/base-python-image) and extends it to add C# Jupyter kernels and VSCode extensions.
+
 See this repository's [CONTRIBUTING.md](https://github.com/cal-icor/c-sharp-user-image/blob/main/CONTRIBUTING.md) for instructions.
 
 ## Building the image locally
