@@ -37,9 +37,6 @@ mkdir -p ${VSCODE_EXTENSIONS}
 
 # This is not reproducible, and it can be difficult to version these.
 for x in \
-  ms-toolsai.jupyter \
-  ms-python.python \
-  ms-vscode.live-server \
   ms-dotnettools.vscode-dotnet-runtime \
   jakubkozera.csharp-dev-tools \
   ; do
