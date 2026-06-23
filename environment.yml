@@ -6,7 +6,7 @@ channels:
 
 dependencies:
   - ipywidgets==8.1.8
-  # C# / .NET — provides `dotnet`/`csc` for compiling and running C#.
-  # Paired with the Microsoft.dotnet-interactive Jupyter kernel installed in
-  # postBuild (the kernel tool targets net10.0, so the SDK major must match).
-  - dotnet-sdk==10.0.100
+  # The .NET SDK is installed from apt instead of conda-forge (see apt.txt):
+  # conda-forge's dotnet-sdk ships only the base .NET runtime, but the
+  # Microsoft.dotnet-interactive kernel is an ASP.NET Core app and needs the
+  # Microsoft.AspNetCore.App shared framework, which the apt package provides.
