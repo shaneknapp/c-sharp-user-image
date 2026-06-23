@@ -26,10 +26,6 @@ playwright install chromium
 # https://github.com/berkeley-dsep-infra/datahub/issues/5827
 git config --system pull.rebase false
 
-# set the location for the default rstudio prefs
-mkdir -p ${REPO_DIR}/rstudio/dictionaries
-cp -p rstudio-config/rstudio/rstudio-prefs.json ${REPO_DIR}/rstudio/
-
 # overrides.json is a file that jupyterlab reads to determine some settings
 # 1) remove the 'create shareable link' option from the filebrowser context menu
 mkdir -p ${NB_PYTHON_PREFIX}/share/jupyter/lab/settings
@@ -43,10 +39,7 @@ mkdir -p ${VSCODE_EXTENSIONS}
 for x in \
   ms-toolsai.jupyter \
   ms-python.python \
-  quarto.quarto \
   ms-vscode.live-server \
-  posit.shiny \
-  reditorsupport.r \
   ms-dotnettools.vscode-dotnet-runtime \
   jakubkozera.csharp-dev-tools \
   ; do
