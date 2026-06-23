@@ -15,4 +15,10 @@ export XDG_CONFIG_HOME=${REPO_DIR}/rstudio-config
 # Set vscode proxy URI template
 export VSCODE_PROXY_URI="../proxy/absolute/{{port}}/"
 
+# Make the .NET Interactive global tool (installed in postBuild) available on
+# PATH, and silence the dotnet CLI telemetry/first-run banners for users.
+export PATH="${NB_PYTHON_PREFIX}/dotnet-tools:${PATH}"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_NOLOGO=1
+
 exec "$@"

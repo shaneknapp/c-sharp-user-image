@@ -51,6 +51,11 @@ dependencies:
   - statsmodels==0.14.6
   - sympy==1.14.0
 
+  # C# / .NET — provides `dotnet`/`csc` for compiling and running C#.
+  # Paired with the Microsoft.dotnet-interactive Jupyter kernel installed in
+  # postBuild (the kernel tool targets net10.0, so the SDK major must match).
+  - dotnet-sdk==10.0.100
+
   # pip installed packages, conda is preferred
   - pip:
     # - jupyterlab-a11y-checker==0.2.7
