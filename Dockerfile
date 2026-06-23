@@ -23,11 +23,16 @@ COPY --chown=${NB_USER}:${NB_USER} environment.yml /tmp/environment.yml
 RUN mamba env update -n notebook -f /tmp/environment.yml && \
     mamba clean -afy && rm -rf /tmp/environment.yml
 
-ENV PATH="${CONDA_DIR}/envs/notebook/lib/dotnet/:${CONDA_DIR}/envs/notebook/bin:${PATH}"
+# The .NET SDK comes from apt (dotnet-sdk-10.0 -> /usr/lib/dotnet), which ships
+# the Microsoft.AspNetCore.App shared framework the .NET Interactive kernel
+# needs. Put it first on PATH and point DOTNET_ROOT at it so the kernel and the
+# `dotnet` CLI resolve that runtime.
+ENV DOTNET_ROOT=/usr/lib/dotnet
+ENV PATH="/usr/lib/dotnet:${CONDA_DIR}/envs/notebook/bin:${PATH}"
 
 # Install the .NET Interactive (Polyglot) Jupyter kernel so users can compile
-# and run C# in notebook cells. The `dotnet` SDK itself comes from
-# environment.yml (conda-forge dotnet-sdk). https://github.com/dotnet/interactive
+# and run C# in notebook cells. The `dotnet` SDK itself comes from apt
+# (dotnet-sdk-10.0, see apt.txt). https://github.com/dotnet/interactive
 #
 # The tool and kernelspec must live in baked image locations rather than the
 # user's home directory (~/.dotnet, ~/.local/share/jupyter), which is masked by
@@ -36,7 +41,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV DOTNET_NOLOGO=1
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 ENV DOTNET_TOOLS=${NB_PYTHON_PREFIX}/dotnet-tools
-# Tool version targets net10.0; keep its major in sync with dotnet-sdk above.
+# Tool version targets net10.0; keep its major in sync with the apt dotnet-sdk.
 RUN dotnet tool install Microsoft.dotnet-interactive \
     --version 1.0.712001 \
     --tool-path "${DOTNET_TOOLS}"

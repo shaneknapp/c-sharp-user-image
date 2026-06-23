@@ -12,6 +12,7 @@ We cover two distinct paths:
     `dotnet run`, `csc`), exercised by shelling out from a `python3` kernel that
     runs inside the container.
 """
+
 import json
 import textwrap
 import uuid
@@ -28,7 +29,7 @@ KERNEL_NAME = ".net-csharp"
 # `dotnet run` does a NuGet restore, so the per-recv (cell-silence) timeout is
 # generous: a long-running cell sends no messages until it completes.
 KERNEL_START_TIMEOUT = 120  # s
-EXECUTE_TIMEOUT = 300       # s
+EXECUTE_TIMEOUT = 300  # s
 
 
 @pytest.fixture(scope="module")
@@ -55,26 +56,30 @@ def _execute(kernel_id, code):
     )
     msg_id = uuid.uuid4().hex
     try:
-        ws.send(json.dumps({
-            "header": {
-                "msg_id": msg_id,
-                "username": "test",
-                "session": uuid.uuid4().hex,
-                "msg_type": "execute_request",
-                "version": "5.3",
-            },
-            "parent_header": {},
-            "metadata": {},
-            "content": {
-                "code": code,
-                "silent": False,
-                "store_history": True,
-                "user_expressions": {},
-                "allow_stdin": False,
-                "stop_on_error": True,
-            },
-            "channel": "shell",
-        }))
+        ws.send(
+            json.dumps(
+                {
+                    "header": {
+                        "msg_id": msg_id,
+                        "username": "test",
+                        "session": uuid.uuid4().hex,
+                        "msg_type": "execute_request",
+                        "version": "5.3",
+                    },
+                    "parent_header": {},
+                    "metadata": {},
+                    "content": {
+                        "code": code,
+                        "silent": False,
+                        "store_history": True,
+                        "user_expressions": {},
+                        "allow_stdin": False,
+                        "stop_on_error": True,
+                    },
+                    "channel": "shell",
+                }
+            )
+        )
 
         stdout = ""
         while True:
@@ -86,7 +91,10 @@ def _execute(kernel_id, code):
             if msg_type == "stream" and content.get("name") == "stdout":
                 stdout += content.get("text", "")
             elif msg_type == "error":
-                pytest.fail("C# kernel returned an error: " + "\n".join(content.get("traceback", [])))
+                pytest.fail(
+                    "C# kernel returned an error: "
+                    + "\n".join(content.get("traceback", []))
+                )
             elif msg_type == "status" and content.get("execution_state") == "idle":
                 break
         return stdout
@@ -127,17 +135,23 @@ def test_csharp_kernel_registered(session):
 
 def test_csharp_compiles_and_runs(kernel_id):
     """A small C# program compiles and runs on the .NET (C#) kernel."""
-    out = _execute(kernel_id, 'int Add(int a, int b) => a + b;\nConsole.WriteLine($"2 + 3 = {Add(2, 3)}");')
+    out = _execute(
+        kernel_id,
+        'int Add(int a, int b) => a + b;\nConsole.WriteLine($"2 + 3 = {Add(2, 3)}");',
+    )
     assert "2 + 3 = 5" in out
 
 
 def test_dotnet_sdk_version(python_kernel_id):
     """The `dotnet` SDK CLI is on PATH inside the container at the pinned major."""
-    out = _execute(python_kernel_id, textwrap.dedent("""
+    out = _execute(
+        python_kernel_id,
+        textwrap.dedent("""
         import subprocess
         r = subprocess.run(["dotnet", "--version"], capture_output=True, text=True)
         print("DOTNET_VERSION:" + r.stdout.strip())
-    """))
+    """),
+    )
     assert "DOTNET_VERSION:10." in out
 
 
